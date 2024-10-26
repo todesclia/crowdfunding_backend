@@ -6,10 +6,16 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from .models import CustomUser
 from .serializers import CustomUserSerializer
+from rest_framework import status, permissions
+from .permissions import IsUserOrReadOnly
+
 
 class CustomUserList(APIView):
+    permission_classes = [IsUserOrReadOnly]
+
     def get(self, request):
         users = CustomUser.objects.all()
+        self.check_object_permissions(self.request, users)
         serializer = CustomUserSerializer(users, many=True)
         return Response(serializer.data)
     
@@ -27,6 +33,8 @@ class CustomUserList(APIView):
         )
 
 class CustomUserDetail(APIView):
+    permission_classes = [IsUserOrReadOnly]
+
     def get_object(self, pk):
         try:
             return CustomUser.objects.get(pk=pk)
@@ -35,8 +43,26 @@ class CustomUserDetail(APIView):
         
     def get(self, request, pk):
         user = self.get_object(pk)
+        self.check_object_permissions(self.request, user)
         serializer = CustomUserSerializer(user)
         return Response(serializer.data)
+    
+    def put(self, request, pk):
+        user = self.get_object(pk)
+        self.check_object_permissions(self.request, user)
+        serializer = CustomUserSerializer(
+            instance=user,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
