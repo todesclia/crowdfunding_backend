@@ -28,10 +28,12 @@ class ProjectList(APIView):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
+            print("File saved:", serializer.validated_data.get("image"))
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )
+        print("Errors:", serializer.errors)
         return Response(
             serializer.errors,
             status=status.HTTP_401_UNAUTHORIZED
