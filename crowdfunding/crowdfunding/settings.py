@@ -32,9 +32,7 @@ AWS_DEFAULT_ACL = 'public-read'  # Makes uploaded files publicly accessible
 
 # Media settings for storing files in S3
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-# Media file configuration
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -54,10 +52,7 @@ DEBUG = os.environ.get(
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['*']
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Adjust the port if needed
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
