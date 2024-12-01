@@ -2,10 +2,16 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
+from django.shortcuts import render, redirect
+from django.core.files.storage import default_storage
+from django.http import JsonResponse
 from django.http import Http404
 from .models import Project, Pledge
 from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer
 from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -20,23 +26,20 @@ class ProjectList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        print("Request data:", request.data)
-        image_file = request.FILES.get('image')
-        if image_file:
-            print("Uploaded image:", image_file.name)
-            
+        logger.debug("Request data: %s", request.data)  # Log incoming request data
+
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
-            print("File saved:", serializer.validated_data.get("image"))
+            logger.info("Project created successfully: %s", serializer.data)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )
-        print("Errors:", serializer.errors)
+        logger.error("Errors during project creation: %s", serializer.errors)
         return Response(
             serializer.errors,
-            status=status.HTTP_401_UNAUTHORIZED
+            status=status.HTTP_400_BAD_REQUEST
         )
 
 class ProjectDetail(APIView):
