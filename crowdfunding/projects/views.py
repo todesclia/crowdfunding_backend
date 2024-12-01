@@ -20,6 +20,11 @@ class ProjectList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
+        print("Request data:", request.data)
+        image_file = request.FILES.get('image')
+        if image_file:
+            print("Uploaded image:", image_file.name)
+            
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
