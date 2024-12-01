@@ -39,7 +39,7 @@ class ProjectList(APIView):
         logger.error("Errors during project creation: %s", serializer.errors)
         return Response(
             serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_401_UNAUTHORIZED
         )
 
 class ProjectDetail(APIView):
