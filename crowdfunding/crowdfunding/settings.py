@@ -50,12 +50,10 @@ DEBUG = os.environ.get(
 ) != 'False'
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'users.apps.UsersConfig',
