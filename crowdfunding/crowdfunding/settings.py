@@ -21,16 +21,15 @@ load_dotenv("../.env")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # S3 Bucket Configuration
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = 'AKIA46ZDFAUYOJZFQ55L'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'lt-django-media-files'
 AWS_S3_REGION_NAME = 'ap-southeast-2'
-
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3git.amazonaws.com"
+AWS_S3_CUSTOM_DOMAIN = 'lt-django-media-files.s3git.amazonaws.com'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_DEFAULT_ACL = 'public-read'  # Makes uploaded files publicly accessible
-
-# Media settings for storing files in S3
+AWS_DEFAULT_ACL = None
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
 

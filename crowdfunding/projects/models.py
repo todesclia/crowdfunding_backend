@@ -10,7 +10,6 @@ class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     goal = models.IntegerField()
-    # image = models.URLField()
     image = models.ImageField(upload_to=image_upload_to, null=True, blank=True)
     is_open = models.BooleanField()
     date_created = models.DateTimeField(auto_now=True)
