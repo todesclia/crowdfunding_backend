@@ -7,7 +7,7 @@ class Project(models.Model):
     description = models.TextField()
     goal = models.IntegerField()
     image = models.ImageField(upload_to='images/', null=True, blank=True)
-    is_open = models.BooleanField()
+    is_open = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(
         get_user_model(),
