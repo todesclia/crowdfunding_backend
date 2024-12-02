@@ -6,13 +6,10 @@ from django.http import Http404
 from .models import Project, Pledge
 from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer
 from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly
-import logging
-
-logger = logging.getLogger(__name__)
 
 class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    parser_classes = [MultiPartParser, FormParser] #handles image file uploads
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
         # use the project model to get a list of all projects in the db
@@ -23,12 +20,9 @@ class ProjectList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        logger.debug("Request data: %s", request.data)  # Log incoming request data
-
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
-            logger.info("Project created successfully: %s", serializer.data)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
