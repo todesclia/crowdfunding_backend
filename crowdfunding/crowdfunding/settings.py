@@ -53,7 +53,7 @@ DEBUG = os.environ.get(
     'DJANGO_DEBUG'
 ) != 'False'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'moonlit-stroopwafel-09d7b2.netlify.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'moonlit-stroopwafel-09d7b2.netlify.app', 'ripplerise-759bd7191bc0.herokuapp.com']
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
