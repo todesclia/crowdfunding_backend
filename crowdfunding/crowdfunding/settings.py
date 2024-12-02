@@ -53,7 +53,7 @@ DEBUG = os.environ.get(
     'DJANGO_DEBUG'
 ) != 'False'
 
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'moonlit-stroopwafel-09d7b2.netlify.app']
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
