@@ -6,20 +6,7 @@ from django.http import Http404
 from .models import Project, Pledge
 from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer
 from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly
-import boto3
-import logging
-from django.conf import settings
-from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
-from django.http import JsonResponse
 
-s3 = boto3.client(
-    's3',
-    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-    region_name=settings.AWS_REGION,  # Ensure you have region configured in settings
-)
-
-logger = logging.getLogger(__name__)
 
 class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -34,38 +21,13 @@ class ProjectList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        logger.info(f"Request Data: {request.data}")
-        logger.info(f"Request Files: {request.FILES}")
-
-        project_image = request.FILES.get('image') 
-        if project_image:
-            try:
-                # Log the start of the upload process
-                logger.info(f"Uploading {project_image.name} to S3...")
-
-                # Upload file to S3
-                s3.upload_fileobj(
-                    project_image, 
-                    settings.AWS_STORAGE_BUCKET_NAME,  # Your S3 bucket name
-                    f'projects/{project_image.name}'   # Path within your S3 bucket
-                )
-
-                # Log success
-                logger.info(f"File {project_image.name} uploaded successfully to S3.")
-
-            except NoCredentialsError:
-                logger.error("AWS credentials not found.")
-                return JsonResponse({"error": "AWS credentials not found."}, status=400)
-            except PartialCredentialsError:
-                logger.error("Incomplete AWS credentials.")
-                return JsonResponse({"error": "Incomplete AWS credentials."}, status=400)
-            except ClientError as e:
-                logger.error(f"Client error: {e}")
-                return JsonResponse({"error": f"Client error: {str(e)}"}, status=400)
+        print(f"Request Data: {request.data}")
+        print(f"Request Files: {request.FILES}")
 
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
+            print("Project created successfully!")
 
             return Response(
                 serializer.data,
