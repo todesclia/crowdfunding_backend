@@ -6,7 +6,7 @@ class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     goal = models.IntegerField()
-    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    image = models.URLField(blank=True, null=True)  # Store the image URL from S3
     is_open = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(

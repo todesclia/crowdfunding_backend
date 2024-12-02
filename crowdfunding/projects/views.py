@@ -15,8 +15,11 @@ def upload_to_s3(file):
 
     try:
         # Upload the file to the S3 bucket
-        s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file.name)
+        s3_key = f"images/{file.name}"
+        s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
         print("File uploaded successfully!")
+        s3_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/{s3_keye}"
+        return s3_url
     except NoCredentialsError:
         print("AWS credentials not found.")
     except ClientError as e:
@@ -39,11 +42,17 @@ class ProjectList(APIView):
         print(f"Request Data: {request.data}")
         print(f"Request Files: {request.FILES}")
 
-        # Handling file upload
+        # Handle file upload
         file = request.FILES.get('image')  # 'image' is the key in your form data
+        image_url = None
         if file:
-            # Call the function to upload to S3
-            upload_to_s3(file)
+            # Upload the file to S3
+            image_url = upload_to_s3(file)
+
+        # Prepare the request data for the serializer
+        # If the image URL was returned, we include it in the data
+        if image_url:
+            request.data['image'] = image_url  # Include the image URL in the request data
 
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
