@@ -1,3 +1,6 @@
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
+from django.conf import settings
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,6 +9,18 @@ from django.http import Http404
 from .models import Project, Pledge
 from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer
 from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly
+
+def upload_to_s3(file):
+    s3 = boto3.client('s3', region_name=settings.AWS_REGION)
+
+    try:
+        # Upload the file to the S3 bucket
+        s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file.name)
+        print("File uploaded successfully!")
+    except NoCredentialsError:
+        print("AWS credentials not found.")
+    except ClientError as e:
+        print(f"Error uploading file to S3: {e}")
 
 
 class ProjectList(APIView):
@@ -23,6 +38,12 @@ class ProjectList(APIView):
     def post(self, request):
         print(f"Request Data: {request.data}")
         print(f"Request Files: {request.FILES}")
+
+        # Handling file upload
+        file = request.FILES.get('image')  # 'image' is the key in your form data
+        if file:
+            # Call the function to upload to S3
+            upload_to_s3(file)
 
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
