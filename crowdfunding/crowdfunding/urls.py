@@ -27,5 +27,5 @@ urlpatterns = [
     path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'), 
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL)

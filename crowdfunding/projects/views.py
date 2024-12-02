@@ -27,7 +27,6 @@ class ProjectList(APIView):
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )
-        logger.error("Errors during project creation: %s", serializer.errors)
         return Response(
             serializer.errors,
             status=status.HTTP_401_UNAUTHORIZED
