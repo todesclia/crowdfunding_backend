@@ -20,13 +20,19 @@ class ProjectList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
+        print(f"Request Data: {request.data}")
+        print(f"Request Files: {request.FILES}")
+
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
+            print("Project created successfully!")
+
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )
+        print(f"Serializer Errors: {serializer.errors}")
         return Response(
             serializer.errors,
             status=status.HTTP_401_UNAUTHORIZED
