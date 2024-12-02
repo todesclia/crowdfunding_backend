@@ -14,12 +14,16 @@ def upload_to_s3(file):
     s3 = boto3.client('s3', region_name=settings.AWS_REGION)
 
     try:
-        # Upload the file to the S3 bucket
-        s3_key = f"images/{file.name}"
-        s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
-        print("File uploaded successfully!")
-        s3_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/{s3_keye}"
-        return s3_url
+        # Define the file name in the S3 bucket (you can customize this part)
+        file_name = f"images/{file.name}"
+        
+        # Upload the file to S3
+        s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file_name)
+
+        # Return the URL of the uploaded image
+        image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/{file_name}"
+        print(f"File uploaded to: {image_url}")
+        return image_url
     except NoCredentialsError:
         print("AWS credentials not found.")
     except ClientError as e:
@@ -48,13 +52,14 @@ class ProjectList(APIView):
         if file:
             # Upload the file to S3
             image_url = upload_to_s3(file)
-
-        # Prepare the request data for the serializer
-        # If the image URL was returned, we include it in the data
-        if image_url:
-            request.data['image'] = image_url  # Include the image URL in the request data
-
+            if image_url:
+                request.data['image'] = image_url  # Include the image URL in the request data
+            else:
+                return Response({"error": "Failed to upload image to S3"}, status=status.HTTP_400_BAD_REQUEST)
+       
         serializer = ProjectSerializer(data=request.data)
+        print(f"Final request data: {request.data}")
+
         if serializer.is_valid():
             serializer.save(owner=request.user)
             print("Project created successfully!")
