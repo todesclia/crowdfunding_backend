@@ -14,10 +14,7 @@ def upload_to_s3(file):
     s3 = boto3.client('s3', region_name=settings.AWS_REGION)
 
     try:
-        # Define the file name in the S3 bucket (you can customize this part)
         file_name = f"images/{file.name}"
-        
-        # Upload the file to S3
         s3.upload_fileobj(file, settings.AWS_STORAGE_BUCKET_NAME, file_name)
 
         # Return the URL of the uploaded image
@@ -28,7 +25,6 @@ def upload_to_s3(file):
         print("AWS credentials not found.")
     except ClientError as e:
         print(f"Error uploading file to S3: {e}")
-
 
 class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -47,7 +43,7 @@ class ProjectList(APIView):
         print(f"Request Files: {request.FILES}")
 
         # Handle file upload
-        file = request.FILES.get('image')  # 'image' is the key in your form data
+        file = request.FILES.get('image')
         image_url = None
         if file:
             # Upload the file to S3
@@ -165,4 +161,11 @@ class PledgeDetail(APIView):
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
+        )
+    def delete(self, request, pk):
+        pledge = self.get_object(pk)
+        pledge.delete()
+        return Response(
+            {"message": "Pledge deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT
         )

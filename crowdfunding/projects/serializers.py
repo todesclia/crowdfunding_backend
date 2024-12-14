@@ -37,3 +37,4 @@ class PledgeDetailSerializer(PledgeSerializer):
         instance.project = validated_data.get('project', instance.project)
         instance.save()
         return instance
+    
